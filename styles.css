@@ -1,0 +1,93 @@
+body {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+}
+
+#maininfo > * {
+    margin: 10px;
+}
+
+table {
+    font-size: 14px;
+    background: white;
+    width: 500px;
+    border-collapse: collapse;
+    text-align: left;
+}
+th {
+    font-weight: normal;
+    color: #039;
+    border-bottom: 2px solid #67d;
+    padding: 10px 8px;
+}
+td {
+    color: #669;
+    padding: 9px 8px;
+    transition: .3s linear;
+    border-bottom: 1px solid #ccc;
+}
+
+tr:hover td {
+    background: #e8edff;
+}
+
+a.btn-add {
+    display: inline-block;
+    color: white;
+    font-size: 90%;
+    text-decoration: none;
+    padding: .25em .5em;
+    border-radius: 7px;
+    background: #196AB0;
+    transition: box-shadow .2s, border-color .2s;
+    margin: 10px 5px;
+}
+
+a.btn-add:hover {
+    background: #227BCA;
+}
+
+a.btn-add:active {
+    padding: calc(.25em + 1px) .5em calc(.25em - 1px); /* Эффект нажатия на кнопку */
+}
+
+.form {
+    max-width: 500px;
+}
+
+.line {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.inp {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    padding: 5px;
+    display: block;
+}
+
+.title {
+    margin: 5px 0;
+    flex-basis: 100px;
+}
+
+.btn-submit {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 4px;
+    cursor: pointer;
+    background: #196AB0;
+    border: none;
+    color: #fff;
+}
+
+label.error {
+    width: 100%;
+    color: red;
+}
+
+.message{
+    color: #C12D2D;
+}
