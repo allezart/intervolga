@@ -10,33 +10,60 @@
         $name = check_string($_POST['name']);
         $population = check_string($_POST['population']);
         $currency = check_string($_POST['currency']);
-        
+
         if($name == '' || $population == '' || $currency == ''){
-            $message .= "Заполните все поля";
+            $message .= "Заполните все поля. <br>";
+            $error = true;
         }
-        if(strlen($name) > 50 || strlen($currency) > 50){
-            $message .= "Очень длинное название";
+        if((strlen($name) > 50)|| strlen($currency) > 50){
+            $message .= "Очень длинное название.<br>";
+            $error = true;
         }
-        
-        /* Подготовленный запрос */
-        $query = $db->prepare("INSERT INTO countries (country_name, country_population, country_currency) VALUES (:name, :population, :currency)");
-        $params = ['name' => $name, 'population' => $population, 'currency' => $currency];
-        $query->execute($params);
-        header('Location: index.php');
-        exit;
+        if(preg_match('/[^a-zA-Zа-яА-Я]/ui', $name) || preg_match('/[^a-zA-Zа-яА-Я]/ui', $currency)){
+            $message .= "Данные введены некорректно!";
+            $error = true;
+        }
+
+        if(!$error){    
+            /* Подготовленный запрос */
+            $query = $db->prepare("INSERT INTO countries (country_name, population_count, country_currency) VALUES (:name, :population, :currency)");
+            $params = ['name' => $name, 'population' => $population, 'currency' => $currency];
+            $query->execute($params);
+            header('Location: index.php');
+            exit;
+        }
     }
     
-    /* Вывод стран из БД и запись их в массив */
-    $query = $db->prepare("SELECT country_name, country_population, country_currency FROM countries");
+    /* Вывод данных из БД и запись их в массив */
+    $query = $db->prepare("SELECT country_name, population_count, country_currency FROM countries");
     $query->execute();
     $countries = $query->fetchAll();
     
     if(count($countries) == 0){
-        $message = "Вы еще не добавили ни одной страны.";
+        $empty_message = "Вы еще не добавили ни одной страны.";
+    }
+    
+    /* Преобразование длинных чисел в читаемый вид */
+    function get_short_number($number){
+        if($number < 1000){
+            return $number;
+        }
+        elseif($number >= 1e3 && $number < 1e6){
+            return round($number/1e3, 1) . " тыс.";
+        }
+        elseif($number < 1e9){
+            return round($number/1e6, 1) . " млн.";
+        }
+        elseif($number < 1e12){
+            return round($number/1e9, 1) . " млрд.";
+        }
+        else{
+            return $number;
+        }
     }
     
     /* Проверка строк на спец-символы и лишние пробелы */
-    function check_string($var) {
+    function check_string($var){
         $var = trim($var);
         $var = htmlspecialchars($var);
         return $var;
@@ -52,8 +79,8 @@
     <body>
         <div id="maininfo">
             <h2>Список стран</h2>
-            <?php if($message != ''): ?>
-                <div class="message"><?=$message?></div>
+            <?php if(isset($empty_message)): ?>
+                <div class="message"><?=$empty_message?></div>
             <?php else: ?>
                 <table>
                     <tr>
@@ -62,14 +89,14 @@
                     <?php foreach($countries as $one): ?>
                         <tr>
                             <td><?=$one['country_name']?></td>
-                            <td><?=$one['country_population']?></td>
+                            <td><?=get_short_number($one['population_count'])?></td>
                             <td><?=$one['country_currency']?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
             <?php endif; ?>
+            <div class="message"><?=$message?></div>
             <a class="btn-add" href="#add">Добавить страну</a>
-            
             <div id="text" style="display: none;">
                 <form class="form" action="index.php" method="post">
                     <div class="line">
